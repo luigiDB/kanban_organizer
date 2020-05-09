@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import 'KanbanClasses.dart';
 import 'StoryWidget.dart';
 
 class StoriesWidget extends StatefulWidget {
@@ -26,21 +27,23 @@ class _StoriesWidgetState extends State<StoriesWidget> {
       stream: Firestore.instance.collection('kanban').snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
+        var document = snapshot.data.documents[1];
+        List<Story> stories = storyFromFirebase(document);
         return ListView.separated(
             itemBuilder: (context, index) {
               return GestureDetector(
                   onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => StoryWidget(snapshot.data.documents[1].data['stories'][index]),
+                        builder: (context) => StoryWidget(stories[index]),
                       )
                   ),
                   child: Card(
-                    child: Text(snapshot.data.documents[1].data['stories'][index]['title']),)
+                    child: Text(stories[index].title),)
               );
             },
             separatorBuilder: (context, index) => const Divider(),
-            itemCount: snapshot.data.documents[1].data['stories'].length,
+            itemCount: stories.length,
         );
       },
     );

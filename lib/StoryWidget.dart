@@ -18,7 +18,7 @@ class _StoryWidgetState extends State<StoryWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(data['title']),
+          title: Text(data.title),
         ),
         body: SafeArea(
             child: Column(
@@ -56,38 +56,38 @@ class _StoryWidgetState extends State<StoryWidget> {
   }
 
   Widget initTargetContainer(section) {
-    var taskView2 = taskView(section);
     return DragTarget(
       builder: (context, candidateData, rejectedData) {
-        return taskView2;
+        return taskView(section);
       },
       onWillAccept: (data) => true,
       onAccept: (data) {
         setState(() {
-          data[section].add(data);
+//          data[section].add(data);
         });
       },
     );
   }
 
   Widget taskView(section) {
+    List<String> tasks = data.map[section];
     return ListView.separated(
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
           return Draggable(
             child: Card(
-              child: Text(data[section][index]),
+              child: Text(tasks[index]),
             ),
             feedback: Card(
-              child: Text(data[section][index]),
+              child: Text(tasks[index]),
             ),
             childWhenDragging: Container(),
-            data: [data[section][index]],
+            data: [tasks[index]],
             onDragCompleted: null,
           );
         },
         separatorBuilder: (context, index) => const Divider(),
-        itemCount: data[section].length
+        itemCount: tasks.length
     );
   }
 }

@@ -1,33 +1,16 @@
 [
     {
-        title: "task1",
-        to_do: [
-            "to_do1"
-        ],
-        in_progress: [
-            "progress1",
-            "progress2"
-        ],
-        testing: [
-            "testing1",
-            "testing2",
-            "testing3",
-            "testing4"
-        ],
-        done: []
+        "title": "task1",
+        "to_do": ["one"],
+        "in_progress": [],
+        "testing": [],
+        "done": ["one", "two"]
     },
     {
-        title: "task2",
-        to_do: [],
-        in_progress: [],
-        testing: [],
-        done: [
-            "done1",
-            "done2",
-            "done3",
-            "done4",
-            "done5",
-            "done6"
-        ]
-    },
+        "title": "task2",
+        "to_do": [],
+        "in_progress": [],
+        "testing": [],
+        "done": []
+    }
 ]
