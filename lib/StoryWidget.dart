@@ -75,23 +75,19 @@ class _StoryWidgetState extends State<StoryWidget> {
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
           return Draggable(
-            child: initTaskCard(data[section][index]),
+            child: Card(
+              child: Text(data[section][index]),
+            ),
             feedback: Card(
-              child: Text(data[section][index]['id']),
+              child: Text(data[section][index]),
             ),
             childWhenDragging: Container(),
-            data: [data[section][index]['id']],
+            data: [data[section][index]],
             onDragCompleted: null,
           );
         },
         separatorBuilder: (context, index) => const Divider(),
         itemCount: data[section].length
-    );
-  }
-
-  Widget initTaskCard(text) {
-    return Card(
-      child: Text(text['title']),
     );
   }
 }
