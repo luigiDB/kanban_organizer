@@ -6,15 +6,19 @@ class StoryWidget extends StatefulWidget {
   StoryWidget(this.data);
 
   @override
-  _StoryWidgetState createState() => _StoryWidgetState();
+  _StoryWidgetState createState() => _StoryWidgetState(data);
 }
 
 class _StoryWidgetState extends State<StoryWidget> {
+  var data;
+
+  _StoryWidgetState(this.data);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(widget.data['title']),
+          title: Text(data['title']),
         ),
         body: SafeArea(
             child: Column(
@@ -23,43 +27,71 @@ class _StoryWidgetState extends State<StoryWidget> {
               flex: 1,
               child: Container(
                 color: Colors.blue,
-                child: taskView('to_do'),
+                child: initTargetContainer('to_do'),
               ),
             ),
             Expanded(
               flex: 1,
               child: Container(
                 color: Colors.green,
-                child: taskView('in_progress'),
+                child: initTargetContainer('in_progress'),
               ),
             ),
             Expanded(
               flex: 1,
               child: Container(
                 color: Colors.yellow,
-                child: taskView('testing'),
+                child: initTargetContainer('testing'),
               ),
             ),
             Expanded(
               flex: 1,
               child: Container(
                 color: Colors.black,
-                child: taskView('done'),
+                child: initTargetContainer('done'),
               ),
             ),
           ],
         )));
   }
 
+  Widget initTargetContainer(section) {
+    var taskView2 = taskView(section);
+    return DragTarget(
+      builder: (context, candidateData, rejectedData) {
+        return taskView2;
+      },
+      onWillAccept: (data) => true,
+      onAccept: (data) {
+        setState(() {
+          data[section].add(data);
+        });
+      },
+    );
+  }
+
   Widget taskView(section) {
     return ListView.separated(
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
-          return Card(
-            child: Text(widget.data[section][index]),
+          return Draggable(
+            child: initTaskCard(data[section][index]),
+            feedback: Card(
+              child: Text(data[section][index]['id']),
+            ),
+            childWhenDragging: Container(),
+            data: [data[section][index]['id']],
+            onDragCompleted: null,
           );
         },
         separatorBuilder: (context, index) => const Divider(),
-        itemCount: widget.data[section].length);
+        itemCount: data[section].length
+    );
+  }
+
+  Widget initTaskCard(text) {
+    return Card(
+      child: Text(text['title']),
+    );
   }
 }
