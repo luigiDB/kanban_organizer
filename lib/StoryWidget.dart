@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:kanban_organizer/KanbanClasses.dart';
 
 class StoryWidget extends StatefulWidget {
-  var story;
+  Story story;
+  final Document doc;
 
-  StoryWidget(this.story);
+  StoryWidget(this.story, this.doc);
 
   @override
   _StoryWidgetState createState() => _StoryWidgetState();
@@ -75,10 +77,12 @@ class _StoryWidgetState extends State<StoryWidget> {
 
   void moveTaskToNextSection(int originSection, int originIndex) {
     List<String> originTaskList = widget.story.map[sectionList[originSection]];
+    List<String> arrivalTaskList = widget.story.map[sectionList[(originSection+1)%4]];
     setState(() {
       var task = originTaskList.removeAt(originIndex);
-      List<String> arrivalTaskList = widget.story.map[sectionList[(originSection+1)%4]];
       arrivalTaskList.add(task);
     });
+
+    widget.doc.updateRemote();
   }
 }

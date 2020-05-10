@@ -28,22 +28,22 @@ class _StoriesWidgetState extends State<StoriesWidget> {
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
         var document = snapshot.data.documents[1];
-        List<Story> stories = storyFromFirebase(document);
+        Document doc = Document.fromSnapshot(document);
         return ListView.separated(
             itemBuilder: (context, index) {
               return GestureDetector(
                   onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => StoryWidget(stories[index]),
+                        builder: (context) => StoryWidget(doc.stories[index], doc),
                       )
                   ),
                   child: Card(
-                    child: Text(stories[index].title),)
+                    child: Text(doc.stories[index].title),)
               );
             },
             separatorBuilder: (context, index) => const Divider(),
-            itemCount: stories.length,
+            itemCount: doc.stories.length,
         );
       },
     );
