@@ -72,22 +72,20 @@ class _StoryWidgetState extends State<StoryWidget> {
     return ListView.separated(
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
+          var task = tasks[index];
           return GestureDetector(
             onTap: () => moveTaskToNextSection(section, index),
-            child: createCard(tasks[index]),
+            child: Card(child: Text(task),),
             onLongPress: () {
-
-            } /*delete*/,
+              setState(() {
+                tasks.removeAt(index);
+              });
+              widget.doc.updateRemote();
+            },
           );
         },
         separatorBuilder: (context, index) => const Divider(),
         itemCount: tasks.length);
-  }
-
-  Widget createCard(String text) {
-    return Card(
-      child: Text(text),
-    );
   }
 
   void moveTaskToNextSection(int originSection, int originIndex) {
