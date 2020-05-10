@@ -50,10 +50,7 @@ class _StoryWidgetState extends State<StoryWidget> {
       )),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          setState(() {
-            createNewTask(context);
-          });
-          widget.doc.updateRemote();
+          createNewTask(context);
         },
         child: Icon(Icons.add),
       ),
@@ -96,7 +93,6 @@ class _StoryWidgetState extends State<StoryWidget> {
       var task = originTaskList.removeAt(originIndex);
       arrivalTaskList.add(task);
     });
-
     widget.doc.updateRemote();
   }
 

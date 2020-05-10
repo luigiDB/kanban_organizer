@@ -6,11 +6,6 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-//List<Story> storyFromFirebase(DocumentSnapshot firebaseDocument) {
-//  return List<Story>.from(
-//      firebaseDocument.data['stories'].map((e) => Story.fromMap(e, reference: firebaseDocument.reference)));
-//}
-
 List<String> initList(Map<String, dynamic> json, String label) {
   var list = List<String>.from(json[label]);
   return list == null ? List() : list;
@@ -20,19 +15,18 @@ class Document {
   List<Story> stories;
   final DocumentReference reference;
 
+  // ToDo: document need to observe the stories to upload firebase
   Document.fromSnapshot(DocumentSnapshot snapshot)
-      : stories = List<Story>.from(snapshot.data['stories']
-      .map((s) => Story.fromMap(s, reference: snapshot.reference))),
+      : stories = List<Story>.from(
+            snapshot.data['stories'].map((s) => Story.fromMap(s))),
         reference = snapshot.reference;
 
-  Map<String, dynamic> toJson() => {
-    'stories': List.from(stories.map((s) => s.toJson()))
-  };
+  Map<String, dynamic> toJson() =>
+      {'stories': List.from(stories.map((s) => s.toJson()))};
 
   void updateRemote() {
     reference.updateData(toJson());
   }
-
 }
 
 class Story {
@@ -41,15 +35,20 @@ class Story {
   List<String> inProgress;
   List<String> testing;
   List<String> done;
-  final DocumentReference reference;
-  final Document document;
 
-  Story.fromMap(Map<String, dynamic> map, {this.reference, this.document})
+  Story.fromMap(Map<String, dynamic> map)
       : title = map["title"],
         toDo = initList(map, "to_do"),
         inProgress = initList(map, "in_progress"),
         testing = initList(map, "testing"),
         done = initList(map, "done");
+
+  Story.empty(String name)
+      : title = name,
+        toDo = List(),
+        inProgress = List(),
+        testing = List(),
+        done = List();
 
   Map<String, List<String>> get map {
     return {
@@ -61,11 +60,10 @@ class Story {
   }
 
   Map<String, dynamic> toJson() => {
-    "title": title,
-    "to_do": List<String>.from(toDo.map((x) => x)),
-    "in_progress": List<String>.from(inProgress.map((x) => x)),
-    "testing": List<String>.from(testing.map((x) => x)),
-    "done": List<String>.from(done.map((x) => x)),
-  };
-
+        "title": title,
+        "to_do": List<String>.from(toDo.map((x) => x)),
+        "in_progress": List<String>.from(inProgress.map((x) => x)),
+        "testing": List<String>.from(testing.map((x) => x)),
+        "done": List<String>.from(done.map((x) => x)),
+      };
 }
