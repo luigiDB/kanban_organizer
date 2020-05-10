@@ -12,7 +12,6 @@ class StoryWidget extends StatefulWidget {
 }
 
 class _StoryWidgetState extends State<StoryWidget> {
-
   Map<int, String> sectionList = {
     0: 'to_do',
     1: 'in_progress',
@@ -20,69 +19,126 @@ class _StoryWidgetState extends State<StoryWidget> {
     3: 'done'
   };
 
-
   _StoryWidgetState();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.story.title),
-        ),
-        body: SafeArea(
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  flex: 1,
-                  child: initContainer(Colors.blue, 0),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: initContainer(Colors.green, 1),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: initContainer(Colors.yellow, 2),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: initContainer(Colors.black, 3),
-                ),
-              ],
-            )));
-  }
-
-  Widget initContainer(Color color, int section) {
-    return Container(
-      color: color,
-      child: taskView(section),
+      appBar: AppBar(
+        title: Text(widget.story.title),
+      ),
+      body: SafeArea(
+          child: Column(
+        children: <Widget>[
+          Expanded(
+            flex: 1,
+            child: initContainer(context, Colors.blue, 0),
+          ),
+          Expanded(
+            flex: 1,
+            child: initContainer(context, Colors.green, 1),
+          ),
+          Expanded(
+            flex: 1,
+            child: initContainer(context, Colors.yellow, 2),
+          ),
+          Expanded(
+            flex: 1,
+            child: initContainer(context, Colors.black, 3),
+          ),
+        ],
+      )),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            createNewTask(context);
+          });
+          widget.doc.updateRemote();
+        },
+        child: Icon(Icons.add),
+      ),
     );
   }
 
-  Widget taskView(int section) {
+  Widget initContainer(BuildContext context, Color color, int section) {
+    return Container(
+      color: color,
+      child: taskView(context, section),
+    );
+  }
+
+  Widget taskView(BuildContext context, int section) {
     List<String> tasks = widget.story.map[sectionList[section]];
     return ListView.separated(
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () => moveTaskToNextSection(section, index),
-            child: Card(
-              child: Text(tasks[index]),
-            ),
+            child: createCard(tasks[index]),
+            onLongPress: () {
+
+            } /*delete*/,
           );
         },
         separatorBuilder: (context, index) => const Divider(),
         itemCount: tasks.length);
   }
 
+  Widget createCard(String text) {
+    return Card(
+      child: Text(text),
+    );
+  }
+
   void moveTaskToNextSection(int originSection, int originIndex) {
     List<String> originTaskList = widget.story.map[sectionList[originSection]];
-    List<String> arrivalTaskList = widget.story.map[sectionList[(originSection+1)%4]];
+    List<String> arrivalTaskList =
+        widget.story.map[sectionList[(originSection + 1) % 4]];
     setState(() {
       var task = originTaskList.removeAt(originIndex);
       arrivalTaskList.add(task);
     });
 
     widget.doc.updateRemote();
+  }
+
+  createNewTask(BuildContext context) {
+    final _formKey = GlobalKey<FormState>();
+    final myController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (cntx) {
+        return AlertDialog(
+          title: Text("New task"),
+          content: Form(
+              key: _formKey,
+              child: Column(
+                children: <Widget>[
+                  TextFormField(
+                    controller: myController,
+                    validator: (value) {
+                      if (value.isEmpty)
+                        return "Not Valid";
+                      else
+                        return null;
+                    },
+                  ),
+                  RaisedButton(
+                    onPressed: () {
+                      if (_formKey.currentState.validate()) {
+                        setState(() {
+                          widget.story.toDo.add(myController.text);
+                        });
+                        widget.doc.updateRemote();
+                        Navigator.pop(cntx);
+                      }
+                    },
+                    child: Text("Add"),
+                  )
+                ],
+              )),
+        );
+      },
+    );
   }
 }
