@@ -6,11 +6,6 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-List<String> initList(Map<String, dynamic> json, String label) {
-  var list = List<String>.from(json[label]);
-  return list == null ? List() : list;
-}
-
 class Document {
   List<Story> stories;
   final DocumentReference reference;
@@ -42,6 +37,11 @@ class Story {
         inProgress = initList(map, "in_progress"),
         testing = initList(map, "testing"),
         done = initList(map, "done");
+
+  static List<String> initList(Map<String, dynamic> json, String label) {
+    var list = List<String>.from(json[label]);
+    return list == null ? List() : list;
+  }
 
   Story.empty(String name)
       : title = name,
