@@ -72,7 +72,12 @@ class _StoryWidgetState extends State<StoryWidget> {
           var task = tasks[index];
           return GestureDetector(
             onTap: () => moveTaskToNextSection(section, index),
-            child: Card(child: Text(task),),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minWidth: 100.0),
+              child: Card(
+                child: Text(task),
+              ),
+            ),
             onLongPress: () {
               setState(() {
                 tasks.removeAt(index);

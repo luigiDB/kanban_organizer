@@ -66,4 +66,10 @@ class Story {
         "testing": List<String>.from(testing.map((x) => x)),
         "done": List<String>.from(done.map((x) => x)),
       };
+
+  int totalNumberOfTask() {
+    return map.values
+        .map((e) => e.length)
+        .reduce((value, element) => value + element);
+  }
 }

@@ -43,7 +43,12 @@ class _StoriesWidgetState extends State<StoriesWidget> {
                           StoryWidget(doc.stories[index], doc),
                     )),
                 child: Card(
-                  child: Text(doc.stories[index].title),
+                  child: Column(
+                    children: <Widget>[
+                      Text(doc.stories[index].title),
+                      Text("${ doc.stories[index].totalNumberOfTask() } items")
+                    ],
+                  ),
                 ),
               onLongPress: () {
                 setState(() {
