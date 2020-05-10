@@ -44,7 +44,14 @@ class _StoriesWidgetState extends State<StoriesWidget> {
                     )),
                 child: Card(
                   child: Text(doc.stories[index].title),
-                ));
+                ),
+              onLongPress: () {
+                setState(() {
+                  doc.stories.removeAt(index);
+                });
+                doc.updateRemote();
+              },
+            );
           },
           separatorBuilder: (context, index) => const Divider(),
           itemCount: doc.stories.length,
