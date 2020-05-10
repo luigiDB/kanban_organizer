@@ -1,93 +1,84 @@
 import 'package:flutter/material.dart';
 
 class StoryWidget extends StatefulWidget {
-  var data;
+  var story;
 
-  StoryWidget(this.data);
+  StoryWidget(this.story);
 
   @override
-  _StoryWidgetState createState() => _StoryWidgetState(data);
+  _StoryWidgetState createState() => _StoryWidgetState();
 }
 
 class _StoryWidgetState extends State<StoryWidget> {
-  var data;
 
-  _StoryWidgetState(this.data);
+  Map<int, String> sectionList = {
+    0: 'to_do',
+    1: 'in_progress',
+    2: 'testing',
+    3: 'done'
+  };
+
+
+  _StoryWidgetState();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(data.title),
+          title: Text(widget.story.title),
         ),
         body: SafeArea(
             child: Column(
-          children: <Widget>[
-            Expanded(
-              flex: 1,
-              child: Container(
-                color: Colors.blue,
-                child: initTargetContainer('to_do'),
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Container(
-                color: Colors.green,
-                child: initTargetContainer('in_progress'),
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Container(
-                color: Colors.yellow,
-                child: initTargetContainer('testing'),
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Container(
-                color: Colors.black,
-                child: initTargetContainer('done'),
-              ),
-            ),
-          ],
-        )));
+              children: <Widget>[
+                Expanded(
+                  flex: 1,
+                  child: initContainer(Colors.blue, 0),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: initContainer(Colors.green, 1),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: initContainer(Colors.yellow, 2),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: initContainer(Colors.black, 3),
+                ),
+              ],
+            )));
   }
 
-  Widget initTargetContainer(section) {
-    return DragTarget(
-      builder: (context, candidateData, rejectedData) {
-        return taskView(section);
-      },
-      onWillAccept: (data) => true,
-      onAccept: (data) {
-        setState(() {
-//          data[section].add(data);
-        });
-      },
+  Widget initContainer(Color color, int section) {
+    return Container(
+      color: color,
+      child: taskView(section),
     );
   }
 
-  Widget taskView(section) {
-    List<String> tasks = data.map[section];
+  Widget taskView(int section) {
+    List<String> tasks = widget.story.map[sectionList[section]];
     return ListView.separated(
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
-          return Draggable(
+          return GestureDetector(
+            onTap: () => moveTaskToNextSection(section, index),
             child: Card(
               child: Text(tasks[index]),
             ),
-            feedback: Card(
-              child: Text(tasks[index]),
-            ),
-            childWhenDragging: Container(),
-            data: [tasks[index]],
-            onDragCompleted: null,
           );
         },
         separatorBuilder: (context, index) => const Divider(),
-        itemCount: tasks.length
-    );
+        itemCount: tasks.length);
+  }
+
+  void moveTaskToNextSection(int originSection, int originIndex) {
+    List<String> originTaskList = widget.story.map[sectionList[originSection]];
+    setState(() {
+      var task = originTaskList.removeAt(originIndex);
+      List<String> arrivalTaskList = widget.story.map[sectionList[(originSection+1)%4]];
+      arrivalTaskList.add(task);
+    });
   }
 }
